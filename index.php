@@ -16,8 +16,14 @@ if (substr($request_uri, 0, 1) !== '/') {
 
 if ($request_uri == '/ambiente/criar' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $controller->postAmbiente(); // Rota para o POST da API
-} elseif ($request_uri == '/ambiente/lista') {
+} elseif ($request_uri == '/ambiente' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $controller->getAllAmbientes();
+} elseif (preg_match('/^\/ambiente\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $controller->getAmbienteById($matches[1]);
+} elseif (preg_match('/^\/ambiente\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $controller->putAmbiente($matches[1]);
+} elseif (preg_match('/^\/ambiente\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $controller->delAmbiente($matches[1]);
 } else {
     echo 'Página não encontrada';
 }
