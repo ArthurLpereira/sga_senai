@@ -5,20 +5,15 @@ class ambientesController
 {
     public function postAmbiente()
     {
-        // 1. Decodifica os dados JSON da requisição, se houver.
-        // `file_get_contents('php://input')` lê o conteúdo do corpo da requisição.
         $json_data = file_get_contents('php://input');
         $dados_json = json_decode($json_data, true);
 
-        // 2. Verifica se os dados JSON foram decodificados com sucesso.
         if ($dados_json !== null) {
             $dados = $dados_json;
         } else {
-            // Se não houver dados JSON, usa o array $_POST (para formulários HTML).
             $dados = $_POST;
         }
 
-        // 3. Validação básica: verifica se todos os campos necessários estão presentes.
         if (
             !isset($dados['nome_ambiente']) ||
             !isset($dados['num_ambiente']) ||
