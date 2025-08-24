@@ -1,0 +1,15 @@
+# Ativa o módulo de reescrita de URL
+RewriteEngine On
+
+# Define a pasta raiz do seu projeto
+# O 'RewriteBase' deve ser o caminho do seu projeto a partir da raiz do servidor.
+# Se o seu projeto estiver em http://localhost/sga_senai/, use /sga_senai/
+RewriteBase /sga_senai/
+
+# Regra de reescrita
+# A regra abaixo diz: "Se a requisição não for para um arquivo existente (-f)
+# e se a requisição não for para um diretório existente (-d),
+# então redirecione a requisição para o arquivo index.php"
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
