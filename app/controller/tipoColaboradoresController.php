@@ -1,211 +1,135 @@
 <?php
+// O caminho do require_once pode variar dependendo da sua estrutura de pastas
 require_once "./app/model/TiposColaboradores.php";
+require_once "./app/controller/ApiResonse.php";
 
 class tipoColaboradoresController
 {
+    // Método para criar um tipo de colaborador (CREATE)
     public function postTipoColaborador()
     {
+        // Lê os dados do corpo da requisição
         $json_data = file_get_contents('php://input');
         $dados_json = json_decode($json_data, true);
 
-        if ($dados_json !== null) {
+        // Prioriza os dados do JSON. Se não houver, usa $_POST
+        if (is_array($dados_json)) {
             $dados = $dados_json;
         } else {
             $dados = $_POST;
         }
 
-        if ($dados == null || !isset($dados['nome_tipo_colaborador'])) {
-            http_response_code(400);
-            header('Content-Type: application/json');
-            echo json_encode([
+        // Validação robusta e unificada
+        if (!isset($dados['nome_tipo_colaborador']) || trim($dados['nome_tipo_colaborador']) === '') {
+            ApiResponse::sendResponse([
                 'success' => false,
-                'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários'
-            ]);
-            exit;
+                'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários.'
+            ], 400);
         }
 
         try {
             $TipoColaboradorCriado = TiposColaboradores::CreateTipoColaborador($dados);
-            http_response_code(200);
-            header('Content-Type: application/json');
-
-            echo json_encode([
-                'success' => true,
-                'message' => 'Tipo de colaborador criado com sucesso',
-                'data' => $TipoColaboradorCriado
-            ]);
-            exit;
+            ApiResponse::sendSuccess('Tipo de colaborador criado com sucesso', $TipoColaboradorCriado, 201);
         } catch (PDOException $e) {
-            http_response_code(500);
-            header('Content-Type: application/json');
-
-            echo json_encode([
-                'success' => false,
-                'message' => 'Erro ao criar tipo de colaborador',
-                'error' => $e->getMessage()
-            ]);
-            exit;
+            ApiResponse::sendError('Erro ao criar tipo de colaborador', $e->getMessage(), 500);
         }
     }
 
+    // Método para ler todos os tipos de colaborador (READ ALL)
     public function getAllTiposColaboradores()
     {
         try {
             $TipoColaboradores = TiposColaboradores::ReadAllTipoColaborador();
-            header('Content-Type: application/json');
-            http_response_code(200);
-
-            echo json_encode([
-                'success' => true,
-                'message' => 'Lista retornada com sucesso',
-                'data' => $TipoColaboradores
-            ]);
-            exit;
+            if ($TipoColaboradores) {
+                ApiResponse::sendSuccess('Lista retornada com sucesso', $TipoColaboradores, 200);
+            } else {
+                ApiResponse::sendSuccess('Nenhum tipo de colaborador encontrado', [], 200);
+            }
         } catch (PDOException $e) {
-            header('Content-Type: application/json');
-            http_response_code(500);
-
-            echo json_encode([
-                'success' => false,
-                'message' => 'Erro ao retornar lista',
-                'error' => $e->getMessage()
-            ]);
-            exit;
+            ApiResponse::sendError('Erro ao retornar lista', $e->getMessage(), 500);
         }
     }
 
+    // Método para ler um tipo de colaborador por ID (READ ONE)
     public function getTipoColaboradorById($id_tipo_colaborador)
     {
         try {
             $TipoColaborador = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
             if ($TipoColaborador) {
-                http_response_code(200);
-                header('Content-Type: application/json');
-
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Tipo de colaborador encontrado com sucesso',
-                    'data' => $TipoColaborador
-                ]);
+                ApiResponse::sendSuccess('Tipo de colaborador encontrado com sucesso', $TipoColaborador, 200);
             } else {
-                http_response_code(404);
-                header('Content-Type: application/json');
-
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Tipo de colaborador não encontrado'
-                ]);
-                exit;
+                ApiResponse::sendResponse(
+                    ['success' => false, 'message' => 'Tipo de colaborador não encontrado.'],
+                    404
+                );
             }
         } catch (PDOException $e) {
-            http_response_code(500);
-            header('Content-Type: application/json');
-
-            echo json_encode([
-                'success' => false,
-                'message' => 'Erro ao buscar tipo de colaborador',
-                'error' => $e->getMessage()
-            ]);
-            exit;
+            ApiResponse::sendError('Erro ao buscar tipo de colaborador', $e->getMessage(), 500);
         }
     }
 
+    // Método para atualizar um tipo de colaborador (UPDATE)
     public function putTipoColaboradore($id_tipo_colaborador)
     {
         $json_data = file_get_contents('php://input');
         $dados = json_decode($json_data, true);
 
-        if ($dados == null || !isset($dados['nome_tipo_colaborador'])) {
-            http_response_code(400);
-            header('Content-Type: application/json');
-
-            echo json_encode([
+        // Validação robusta e unificada
+        if (!isset($dados['nome_tipo_colaborador']) || trim($dados['nome_tipo_colaborador']) === '') {
+            ApiResponse::sendResponse([
                 'success' => false,
-                'message' => 'Dados incompletos, envie todos os campos'
-            ]);
-            exit;
+                'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários'
+            ], 400);
         }
 
         try {
             $TipoColaborador = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
 
             if (!$TipoColaborador) {
-                http_response_code(404);
-                header('Content-Type: application/json');
-
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Tipo de colaborador não encontrado'
-                ]);
-                exit;
+                ApiResponse::sendResponse(
+                    ['success' => false, 'message' => 'Tipo de colaborador não encontrado.'],
+                    404
+                );
             }
 
-            $updateTipoColaborador = TiposColaboradores::UpdateTipoColaborador($id_tipo_colaborador, $dados);
+            $updateSuccess = TiposColaboradores::UpdateTipoColaborador($id_tipo_colaborador, $dados);
 
-            if ($updateTipoColaborador) {
-                http_response_code(200);
-                header('Content-Type: application/json');
-
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Tipo de colaborador atualizado com sucesso',
-                ]);
+            if ($updateSuccess > 0) {
+                $TipoColaboradorAtualizado = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
+                ApiResponse::sendSuccess('Tipo de colaborador atualizado com sucesso', $TipoColaboradorAtualizado, 200);
+            } else {
+                ApiResponse::sendResponse(
+                    ['success' => false, 'message' => 'Nenhuma alteração foi realizada. Os dados enviados são idênticos aos existentes.'],
+                    400
+                );
             }
-            exit;
         } catch (PDOException $e) {
-            http_response_code(500);
-            header('Content-Type: application/json');
-
-            echo json_encode([
-                'success' => false,
-                'message' => 'Erro ao atualizar tipo de colaborador',
-                'error' => $e->getMessage()
-            ]);
-            exit;
+            ApiResponse::sendError('Erro ao atualizar tipo de colaborador', $e->getMessage(), 500);
         }
     }
 
+    // Método para deletar um tipo de colaborador (DELETE)
     public function delTipoColaborador($id_tipo_colaborador)
     {
         try {
             $TipoColaborador = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
 
             if (!$TipoColaborador) {
-                http_response_code(404);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Tipo de colaborador não encontrado'
-                ]);
-                exit;
+                ApiResponse::sendResponse(
+                    ['success' => false, 'message' => 'Tipo de colaborador não encontrado.'],
+                    404
+                );
             }
 
             $deleteSuccess = TiposColaboradores::DeleteTipoColaborador($id_tipo_colaborador);
+
             if ($deleteSuccess) {
-                http_response_code(200);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Tipo de colaborador Deletado com sucesso'
-                ]);
+                ApiResponse::sendSuccess('Tipo de colaborador deletado com sucesso', null, 200);
             } else {
-                http_response_code(500);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Erro ao excluir o tipo de colaborador'
-                ]);
+                ApiResponse::sendError('Erro ao excluir o tipo de colaborador', null, 500);
             }
-            exit;
         } catch (PDOException $e) {
-            http_response_code(500);
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => false,
-                'message' => 'Erro ao excluir o tipo de colaborador',
-                'error' => $e->getMessage()
-            ]);
-            exit;
+            ApiResponse::sendError('Erro ao excluir o tipo de colaborador', $e->getMessage(), 500);
         }
     }
 }
