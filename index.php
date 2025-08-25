@@ -6,13 +6,14 @@ define('URL_BASE', '/sga_senai');
 require_once './app/controller/ambientesController.php';
 require_once './app/controller/tipoColaboradoresController.php';
 require_once './app/controller/CategoriasCursosController.php';
+require_once './app/controller/diasNaoLetivosController.php';
 // Limpa a URI para obter o caminho da rota
 $request_uri = str_replace(URL_BASE, '', $_SERVER['REQUEST_URI']);
 
 $controllerAmbiente = new ambientesController();
 $controllerTipoColaborador = new tipoColaboradoresController();
 $controllerCategoriaCursos = new categoriasCursosController();
-
+$controllerDiaNaoLetivo = new DiasNaoLetivosController();
 header('Content-Type: application/json');
 
 
@@ -50,6 +51,10 @@ if ($request_uri == '/ambiente/criar' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $controllerCategoriaCursos->putTipoCurso($matches[1]);
 } elseif (preg_match('/^\/categoriacurso\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $controllerCategoriaCursos->delCategoriaCurso($matches[1]);
+} elseif ($request_uri == '/dianaoletivo/criar' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $controllerDiaNaoLetivo->postDiasNaoLetivo();
+} elseif ($request_uri == '/dianaoletivo' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $controllerDiaNaoLetivo->getAllDiasNaoLetivos();
 } else {
     echo 'Página não encontrada';
 }
