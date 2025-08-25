@@ -32,6 +32,10 @@ if ($request_uri == '/ambiente/criar' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $controllerTipoColaborador->getAllTiposColaboradores();
 } elseif (preg_match('/^\/tipocolaborador\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $controllerTipoColaborador->getTipoColaboradorById($matches[1]);
+} elseif (preg_match('/^\/tipocolaborador\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $controllerTipoColaborador->putTipoColaboradore($matches[1]);
+} elseif (preg_match('/^\/tipocolaborador\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $controllerTipoColaborador->delTipoColaborador($matches[1]);
 } else {
     echo 'Página não encontrada';
 }

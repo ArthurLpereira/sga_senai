@@ -14,7 +14,7 @@ class tipoColaboradoresController
             $dados = $_POST;
         }
 
-        if (!isset($dados['nome_tipo_colaborador'])) {
+        if ($dados == null || !isset($dados['nome_tipo_colaborador'])) {
             http_response_code(400);
             header('Content-Type: application/json');
             echo json_encode([
@@ -104,6 +104,105 @@ class tipoColaboradoresController
             echo json_encode([
                 'success' => false,
                 'message' => 'Erro ao buscar tipo de colaborador',
+                'error' => $e->getMessage()
+            ]);
+            exit;
+        }
+    }
+
+    public function putTipoColaboradore($id_tipo_colaborador)
+    {
+        $json_data = file_get_contents('php://input');
+        $dados = json_decode($json_data, true);
+
+        if ($dados == null || !isset($dados['nome_tipo_colaborador'])) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+
+            echo json_encode([
+                'success' => false,
+                'message' => 'Dados incompletos, envie todos os campos'
+            ]);
+            exit;
+        }
+
+        try {
+            $TipoColaborador = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
+
+            if (!$TipoColaborador) {
+                http_response_code(404);
+                header('Content-Type: application/json');
+
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Tipo de colaborador não encontrado'
+                ]);
+                exit;
+            }
+
+            $updateTipoColaborador = TiposColaboradores::UpdateTipoColaborador($id_tipo_colaborador, $dados);
+
+            if ($updateTipoColaborador) {
+                http_response_code(200);
+                header('Content-Type: application/json');
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Tipo de colaborador atualizado com sucesso',
+                ]);
+            }
+            exit;
+        } catch (PDOException $e) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erro ao atualizar tipo de colaborador',
+                'error' => $e->getMessage()
+            ]);
+            exit;
+        }
+    }
+
+    public function delTipoColaborador($id_tipo_colaborador)
+    {
+        try {
+            $TipoColaborador = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
+
+            if (!$TipoColaborador) {
+                http_response_code(404);
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Tipo de colaborador não encontrado'
+                ]);
+                exit;
+            }
+
+            $deleteSuccess = TiposColaboradores::DeleteTipoColaborador($id_tipo_colaborador);
+            if ($deleteSuccess) {
+                http_response_code(200);
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Tipo de colaborador Deletado com sucesso'
+                ]);
+            } else {
+                http_response_code(500);
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Erro ao excluir o tipo de colaborador'
+                ]);
+            }
+            exit;
+        } catch (PDOException $e) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erro ao excluir o tipo de colaborador',
                 'error' => $e->getMessage()
             ]);
             exit;

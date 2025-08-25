@@ -49,4 +49,28 @@ class TiposColaboradores
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public static function UpdateTipoColaborador($id_tipo_colaborador, $dados)
+    {
+        $conn = Database::connection();
+        $sql = "UPDATE `tipos_colaboradores` SET `nome_tipo_colaborador`= :nome_tipo_colaborador WHERE id_tipo_colaborador = :id_tipo_colaborador";
+
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bindParam(':id_tipo_colaborador', $id_tipo_colaborador, PDO::PARAM_INT);
+        $stmt->bindParam(':nome_tipo_colaborador', $dados['nome_tipo_colaborador']);
+
+        return $stmt->execute();
+    }
+
+    public static function DeleteTipoColaborador($id_tipo_colaborador)
+    {
+        $conn = Database::connection();
+        $sql = "DELETE FROM `tipos_colaboradores` WHERE `id_tipo_colaborador` = :id_tipo_colaborador";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id_tipo_colaborador', $id_tipo_colaborador, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
 }
