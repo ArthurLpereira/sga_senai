@@ -47,4 +47,27 @@ class CategoriasCursos
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public static function UpdateTipoCurso($id_categoria_curso, $dados)
+    {
+        $conn = Database::connection();
+        $sql = "UPDATE `categorias_cursos` SET `nome_categoria_curso`= :nome_categoria_curso WHERE `id_categoria_curso`= :id_categoria_curso";
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bindParam(':id_categoria_curso', $id_categoria_curso, PDO::PARAM_INT);
+        $stmt->bindParam(':nome_categoria_curso', $dados['nome_categoria_curso']);
+
+        return $stmt->execute();
+    }
+
+    public static  function DeleteAmbiente($id_categoria_curso)
+    {
+        $conn = Database::connection();
+        $sql = "DELETE FROM `categorias_cursos` WHERE `id_categoria_curso` = :id_categoria_curso";
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bindParam(':id_categoria_curso', $id_categoria_curso, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
 }

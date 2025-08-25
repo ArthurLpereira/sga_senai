@@ -46,6 +46,10 @@ if ($request_uri == '/ambiente/criar' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $controllerCategoriaCursos->getAllTiposCursos();
 } elseif (preg_match('/^\/categoriacurso\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $controllerCategoriaCursos->getTipoCursoById($matches[1]);
+} elseif (preg_match('/^\/categoriacurso\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $controllerCategoriaCursos->putTipoCurso($matches[1]);
+} elseif (preg_match('/^\/categoriacurso\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $controllerCategoriaCursos->delCategoriaCurso($matches[1]);
 } else {
     echo 'Página não encontrada';
 }
