@@ -43,4 +43,41 @@ class DiasNaoLetivos
         $ambientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $ambientes;
     }
+
+    public static function ReadOneDiaNaoLetivo($id_dia_nao_letivo)
+    {
+        $conn = Database::connection();
+        $sql = "SELECT * FROM `dias_nao_letivos` WHERE `id_dia_nao_letivo` = :id_dia_nao_letivo";
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bindParam(':id_dia_nao_letivo', $id_dia_nao_letivo, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function UpdateDiaNaoLetivo($id_dia_nao_letivo, $dados)
+    {
+        $conn = Database::connection();
+        $sql = "UPDATE `dias_nao_letivos` SET `data_dia_nao_letivo`= :data_dia_nao_letivo,`descricao_dia_nao_letivo`= :descricao_dia_nao_letivo,`tipo_feriado_dia_nao_letivo`= :tipo_feriado_dia_nao_letivo WHERE `id_dia_nao_letivo` = :id_dia_nao_letivo";
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bindParam(':id_dia_nao_letivo', $id_dia_nao_letivo, PDO::PARAM_INT);
+        $stmt->bindParam(':data_dia_nao_letivo', $dados['data_dia_nao_letivo']);
+        $stmt->bindParam(':descricao_dia_nao_letivo', $dados['descricao_dia_nao_letivo']);
+        $stmt->bindParam(':tipo_feriado_dia_nao_letivo', $dados['tipo_feriado_dia_nao_letivo']);
+
+        return $stmt->execute();
+    }
+
+    public static function DeleteDiasNaoLetivos($id_dia_nao_letivo)
+    {
+        $conn = Database::connection();
+        $sql = "DELETE FROM `dias_nao_letivos` WHERE id_dia_nao_letivo = :id_dia_nao_letivo";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id_dia_nao_letivo', $id_dia_nao_letivo, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
 }

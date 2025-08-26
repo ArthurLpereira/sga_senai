@@ -67,7 +67,6 @@ class Ambientes
         $sql = "UPDATE ambientes SET `nome_ambiente` = :nome_ambiente, `num_ambiente` = :num_ambiente, `capacidade_ambiente` = :capacidade_ambiente, `status_ambiente` = :status_ambiente WHERE `id_ambiente` = :id_ambiente";
         $stmt = $conn->prepare($sql);
 
-        // O resto do código permanece o mesmo
         $stmt->bindParam(':id_ambiente', $id_ambiente, PDO::PARAM_INT);
         $stmt->bindParam(':nome_ambiente', $dados['nome_ambiente']);
         $stmt->bindParam(':num_ambiente', $dados['num_ambiente']);

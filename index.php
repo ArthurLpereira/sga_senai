@@ -55,6 +55,12 @@ if ($request_uri == '/ambiente/criar' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $controllerDiaNaoLetivo->postDiasNaoLetivo();
 } elseif ($request_uri == '/dianaoletivo' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $controllerDiaNaoLetivo->getAllDiasNaoLetivos();
+} elseif (preg_match('/^\/dianaoletivo\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $controllerDiaNaoLetivo->getDiaNaoLetivoById($matches[1]);
+} elseif (preg_match('/^\/dianaoletivo\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $controllerDiaNaoLetivo->putDiaNaoLetivo($matches[1]);
+} elseif (preg_match('/^\/dianaoletivo\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $controllerDiaNaoLetivo->delDiaNaoLetivo($matches[1]);
 } else {
     echo 'Página não encontrada';
 }
