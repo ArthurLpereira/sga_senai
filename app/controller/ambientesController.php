@@ -2,6 +2,7 @@
 // O caminho do require_once pode variar dependendo da sua estrutura de pastas
 require_once "./app/model/Ambientes.php";
 require_once "./app/controller/ApiResonse.php";
+require_once "./app/controller/FormValidator.php";
 
 class ambientesController
 {
@@ -17,12 +18,15 @@ class ambientesController
             $dados = $_POST;
         }
 
-        if (!isset($dados['nome_ambiente']) || !isset($dados['num_ambiente']) || !isset($dados['capacidade_ambiente']) || !isset($dados['status_ambiente'])) {
-            ApiResponse::sendResponse(
-                ['success' => false, 'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários.'],
-                400
-            );
-        }
+
+        $requiredFields = [
+            'nome_ambiente',
+            'num_ambiente',
+            'capacidade_ambiente',
+            'status_ambiente'
+        ];
+
+        FormValidator::FormValidator($dados, $requiredFields);
 
         try {
             $ambienteCriado = Ambientes::createAmbiente($dados);
@@ -71,12 +75,14 @@ class ambientesController
         $json_data = file_get_contents('php://input');
         $dados = json_decode($json_data, true);
 
-        if (!isset($dados['nome_ambiente']) || !isset($dados['num_ambiente']) || !isset($dados['capacidade_ambiente']) || !isset($dados['status_ambiente'])) {
-            ApiResponse::sendResponse(
-                ['success' => false, 'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários'],
-                400
-            );
-        }
+        $requiredFields = [
+            'nome_ambiente',
+            'num_ambiente',
+            'capacidade_ambiente',
+            'status_ambiente'
+        ];
+
+        FormValidator::FormValidator($dados, $requiredFields);
 
         try {
             $ambiente = Ambientes::readOneAmbiente($id_ambiente);

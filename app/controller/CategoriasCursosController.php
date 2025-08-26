@@ -17,12 +17,11 @@ class categoriasCursosController
             $dados = $_POST;
         }
 
-        if (!isset($dados['nome_categoria_curso']) || trim($dados['nome_categoria_curso']) === '') {
-            ApiResponse::sendResponse([
-                'success' => false,
-                'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários.',
-            ], 400);
-        }
+        $requiredFields = [
+            'nome_categoria_curso',
+        ];
+
+        FormValidator::FormValidator($dados, $requiredFields);
 
 
         try {
@@ -74,12 +73,11 @@ class categoriasCursosController
             $dados = $_POST;
         }
 
-        if (!isset($dados['nome_categoria_curso']) || trim($dados['nome_categoria_curso']) === '') {
-            ApiResponse::sendResponse([
-                'success' => false,
-                'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários.',
-            ], 400);
-        }
+        $requiredFields = [
+            'nome_categoria_curso',
+        ];
+
+        FormValidator::FormValidator($dados, $requiredFields);
 
         try {
             $CategoriaCurso = CategoriasCursos::ReadOneTipoCurso($id_categoria_curso);

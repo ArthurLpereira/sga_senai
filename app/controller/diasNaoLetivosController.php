@@ -15,16 +15,14 @@ class DiasNaoLetivosController
             $dados = $_POST;
         }
 
-        if (
-            !isset($dados['data_dia_nao_letivo']) || trim($dados['data_dia_nao_letivo']) === '' ||
-            !isset($dados['descricao_dia_nao_letivo']) || trim($dados['descricao_dia_nao_letivo']) === '' ||
-            !isset($dados['tipo_feriado_dia_nao_letivo']) || trim($dados['tipo_feriado_dia_nao_letivo']) === ''
-        ) {
-            ApiResponse::sendResponse([
-                'success' => false,
-                'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários.',
-            ], 400);
-        }
+
+        $requiredFields = [
+            'data_dia_nao_letivo',
+            'descricao_dia_nao_letivo',
+            'tipo_feriado_dia_nao_letivo',
+        ];
+
+        FormValidator::FormValidator($dados, $requiredFields);
 
         try {
             $DiaNaoLetivoCriado = DiasNaoLetivos::CreateDiaNaoLetivo($dados);
@@ -75,16 +73,13 @@ class DiasNaoLetivosController
             $dados = $_POST;
         }
 
-        if (
-            !isset($dados['data_dia_nao_letivo']) || trim($dados['data_dia_nao_letivo']) === '' ||
-            !isset($dados['descricao_dia_nao_letivo']) || trim($dados['descricao_dia_nao_letivo']) === '' ||
-            !isset($dados['tipo_feriado_dia_nao_letivo']) || trim($dados['tipo_feriado_dia_nao_letivo']) === ''
-        ) {
-            ApiResponse::sendResponse([
-                'success' => false,
-                'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários.',
-            ], 400);
-        }
+        $requiredFields = [
+            'data_dia_nao_letivo',
+            'descricao_dia_nao_letivo',
+            'tipo_feriado_dia_nao_letivo',
+        ];
+
+        FormValidator::FormValidator($dados, $requiredFields);
 
         try {
             $DiaNaoLetivo = DiasNaoLetivos::ReadOneDiaNaoLetivo($id_dia_nao_letivo);

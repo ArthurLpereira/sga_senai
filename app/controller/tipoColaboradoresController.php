@@ -19,13 +19,12 @@ class tipoColaboradoresController
             $dados = $_POST;
         }
 
-        // Validação robusta e unificada
-        if (!isset($dados['nome_tipo_colaborador']) || trim($dados['nome_tipo_colaborador']) === '') {
-            ApiResponse::sendResponse([
-                'success' => false,
-                'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários.'
-            ], 400);
-        }
+
+        $requiredFields = [
+            'nome_tipo_colaborador',
+        ];
+
+        FormValidator::FormValidator($dados, $requiredFields);
 
         try {
             $TipoColaboradorCriado = TiposColaboradores::CreateTipoColaborador($dados);
@@ -74,13 +73,12 @@ class tipoColaboradoresController
         $json_data = file_get_contents('php://input');
         $dados = json_decode($json_data, true);
 
-        // Validação robusta e unificada
-        if (!isset($dados['nome_tipo_colaborador']) || trim($dados['nome_tipo_colaborador']) === '') {
-            ApiResponse::sendResponse([
-                'success' => false,
-                'message' => 'Dados incompletos. Por favor, preencha todos os campos necessários'
-            ], 400);
-        }
+        $requiredFields = [
+            'nome_tipo_colaborador',
+        ];
+
+        FormValidator::FormValidator($dados, $requiredFields);
+
 
         try {
             $TipoColaborador = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
