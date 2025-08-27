@@ -7,6 +7,7 @@ require_once './app/controller/ambientesController.php';
 require_once './app/controller/tipoColaboradoresController.php';
 require_once './app/controller/CategoriasCursosController.php';
 require_once './app/controller/diasNaoLetivosController.php';
+require_once './app/controller/statusTurmasController.php';
 // Limpa a URI para obter o caminho da rota
 $request_uri = str_replace(URL_BASE, '', $_SERVER['REQUEST_URI']);
 
@@ -14,6 +15,8 @@ $controllerAmbiente = new ambientesController();
 $controllerTipoColaborador = new tipoColaboradoresController();
 $controllerCategoriaCursos = new categoriasCursosController();
 $controllerDiaNaoLetivo = new DiasNaoLetivosController();
+$controllerStatusTurmas = new statusTurmasController();
+
 header('Content-Type: application/json');
 
 
@@ -61,6 +64,16 @@ if ($request_uri == '/ambiente/criar' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $controllerDiaNaoLetivo->putDiaNaoLetivo($matches[1]);
 } elseif (preg_match('/^\/dianaoletivo\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $controllerDiaNaoLetivo->delDiaNaoLetivo($matches[1]);
+} elseif ($request_uri == '/statusturmas/criar' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $controllerStatusTurmas->postStatusTurmas();
+} elseif ($request_uri == '/statusturmas' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $controllerStatusTurmas->getAllStatusTurmas();
+} elseif (preg_match('/^\/statusturmas\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $controllerStatusTurmas->getStatusTurmaById($matches[1]);
+} elseif (preg_match('/^\/statusturmas\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $controllerStatusTurmas->putStatusTurma($matches[1]);
+} elseif (preg_match('/^\/statusturmas\/(\d+)$/', $request_uri, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $controllerStatusTurmas->delStatusTurmas($matches[1]);
 } else {
     echo 'Página não encontrada';
 }
