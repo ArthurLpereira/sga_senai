@@ -25,9 +25,14 @@ class DiasNaoLetivosController
         FormValidator::FormValidator($dados, $requiredFields);
 
         try {
-            $DiaNaoLetivoCriado = DiasNaoLetivos::CreateDiaNaoLetivo($dados);
+            $DiaNaoLetivoCriado = DiasNaoLetivos::Create($dados);
             if ($DiaNaoLetivoCriado) {
-                ApiResponse::sendSuccess('Dia não letivo criado com sucesso', $DiaNaoLetivoCriado, 200);
+                $conn = Database::connection();
+                $lastId = $conn->lastInsertId();
+
+                $novoDiaNaoLetivo = DiasNaoLetivos::readOne($lastId);
+
+                ApiResponse::sendSuccess('Dia não letivo criado com sucesso', $novoDiaNaoLetivo, 200);
             }
         } catch (PDOException $e) {
             ApiResponse::sendError('Erro ao criar dia não letivo', $e->getMessage(), 500);
@@ -37,7 +42,7 @@ class DiasNaoLetivosController
     public function getAllDiasNaoLetivos()
     {
         try {
-            $DiasNaoLetivos = DiasNaoLetivos::ReadAllDiasNaoLetivos();
+            $DiasNaoLetivos = DiasNaoLetivos::ReadAll();
             ApiResponse::sendSuccess('Lista retornadada com sucesso', $DiasNaoLetivos, 200);
         } catch (PDOException $e) {
             ApiResponse::sendError('Erro ao retornar lista', $e->getMessage(), 500);
@@ -47,7 +52,7 @@ class DiasNaoLetivosController
     public function getDiaNaoLetivoById($id_dia_nao_letivo)
     {
         try {
-            $DiaNaoLetivo = DiasNaoLetivos::ReadOneDiaNaoLetivo($id_dia_nao_letivo);
+            $DiaNaoLetivo = DiasNaoLetivos::readOne($id_dia_nao_letivo);
 
             if ($DiaNaoLetivo) {
                 ApiResponse::sendSuccess('Dia não letivo encontrada com sucesso', $DiaNaoLetivo, 200);
@@ -82,7 +87,7 @@ class DiasNaoLetivosController
         FormValidator::FormValidator($dados, $requiredFields);
 
         try {
-            $DiaNaoLetivo = DiasNaoLetivos::ReadOneDiaNaoLetivo($id_dia_nao_letivo);
+            $DiaNaoLetivo = DiasNaoLetivos::ReadOne($id_dia_nao_letivo);
 
             if (!$DiaNaoLetivo) {
                 ApiResponse::sendResponse([
@@ -91,14 +96,14 @@ class DiasNaoLetivosController
                 ], 404);
             }
 
-            $updateSuccess = DiasNaoLetivos::UpdateDiaNaoLetivo($id_dia_nao_letivo, $dados);
+            $updateSuccess = DiasNaoLetivos::update($id_dia_nao_letivo, $dados);
 
             if ($updateSuccess > 0) {
-                $CDiaNaoLetivo = CategoriasCursos::ReadOneTipoCurso($id_dia_nao_letivo);
+                $DiaNaoLetivo = DiasNaoLetivos::readOne($id_dia_nao_letivo);
                 ApiResponse::sendSuccess('Dia não letivo alterado com sucesso', $DiaNaoLetivo);
             } else {
                 ApiResponse::sendResponse([
-                    'success' => false,
+                    'success' => true,
                     'message' => 'Erro ao atualizar Dia não letivo'
                 ], 400);
             }
@@ -110,7 +115,7 @@ class DiasNaoLetivosController
     public function delDiaNaoLetivo($id_dia_nao_letivo)
     {
         try {
-            $DiasNaoLetivos =  DiasNaoLetivos::ReadOneDiaNaoLetivo($id_dia_nao_letivo);
+            $DiasNaoLetivos =  DiasNaoLetivos::readOne($id_dia_nao_letivo);
 
             if (!$DiasNaoLetivos) {
                 ApiResponse::sendResponse([
@@ -119,7 +124,7 @@ class DiasNaoLetivosController
                 ], 404);
             }
 
-            $deleteSuccess =  DiasNaoLetivos::DeleteDiasNaoLetivos($id_dia_nao_letivo);
+            $deleteSuccess =  DiasNaoLetivos::delete($id_dia_nao_letivo);
 
 
             if ($deleteSuccess) {

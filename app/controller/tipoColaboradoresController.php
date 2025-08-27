@@ -27,8 +27,13 @@ class tipoColaboradoresController
         FormValidator::FormValidator($dados, $requiredFields);
 
         try {
-            $TipoColaboradorCriado = TiposColaboradores::CreateTipoColaborador($dados);
-            ApiResponse::sendSuccess('Tipo de colaborador criado com sucesso', $TipoColaboradorCriado, 201);
+            $TipoColaboradorCriado = TiposColaboradores::Create($dados);
+
+            $conn = Database::connection();
+            $lastId = $conn->lastInsertId();
+
+            $TipoColaborador = TiposColaboradores::readOne($lastId);
+            ApiResponse::sendSuccess('Tipo de colaborador criado com sucesso', $TipoColaborador, 201);
         } catch (PDOException $e) {
             ApiResponse::sendError('Erro ao criar tipo de colaborador', $e->getMessage(), 500);
         }
@@ -38,7 +43,7 @@ class tipoColaboradoresController
     public function getAllTiposColaboradores()
     {
         try {
-            $TipoColaboradores = TiposColaboradores::ReadAllTipoColaborador();
+            $TipoColaboradores = TiposColaboradores::readAll();
             if ($TipoColaboradores) {
                 ApiResponse::sendSuccess('Lista retornada com sucesso', $TipoColaboradores, 200);
             } else {
@@ -53,7 +58,7 @@ class tipoColaboradoresController
     public function getTipoColaboradorById($id_tipo_colaborador)
     {
         try {
-            $TipoColaborador = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
+            $TipoColaborador = TiposColaboradores::ReadOne($id_tipo_colaborador);
             if ($TipoColaborador) {
                 ApiResponse::sendSuccess('Tipo de colaborador encontrado com sucesso', $TipoColaborador, 200);
             } else {
@@ -81,7 +86,7 @@ class tipoColaboradoresController
 
 
         try {
-            $TipoColaborador = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
+            $TipoColaborador = TiposColaboradores::ReadOne($id_tipo_colaborador);
 
             if (!$TipoColaborador) {
                 ApiResponse::sendResponse(
@@ -90,10 +95,10 @@ class tipoColaboradoresController
                 );
             }
 
-            $updateSuccess = TiposColaboradores::UpdateTipoColaborador($id_tipo_colaborador, $dados);
+            $updateSuccess = TiposColaboradores::Update($id_tipo_colaborador, $dados);
 
             if ($updateSuccess > 0) {
-                $TipoColaboradorAtualizado = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
+                $TipoColaboradorAtualizado = TiposColaboradores::readOne($id_tipo_colaborador);
                 ApiResponse::sendSuccess('Tipo de colaborador atualizado com sucesso', $TipoColaboradorAtualizado, 200);
             } else {
                 ApiResponse::sendResponse(
@@ -110,7 +115,7 @@ class tipoColaboradoresController
     public function delTipoColaborador($id_tipo_colaborador)
     {
         try {
-            $TipoColaborador = TiposColaboradores::ReadOneTipoColaborador($id_tipo_colaborador);
+            $TipoColaborador = TiposColaboradores::ReadOne($id_tipo_colaborador);
 
             if (!$TipoColaborador) {
                 ApiResponse::sendResponse(
@@ -119,7 +124,7 @@ class tipoColaboradoresController
                 );
             }
 
-            $deleteSuccess = TiposColaboradores::DeleteTipoColaborador($id_tipo_colaborador);
+            $deleteSuccess = TiposColaboradores::Delete($id_tipo_colaborador);
 
             if ($deleteSuccess) {
                 ApiResponse::sendSuccess('Tipo de colaborador deletado com sucesso', null, 200);

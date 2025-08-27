@@ -25,9 +25,14 @@ class categoriasCursosController
 
 
         try {
-            $TipoCursoCriado = CategoriasCursos::CreateTipoCurso($dados);
+            $TipoCursoCriado = CategoriasCursos::Create($dados);
             if ($TipoCursoCriado) {
-                ApiResponse::sendSuccess('Tipo de curso criado com sucesso', $TipoCursoCriado, 200);
+
+                $conn = Database::connection();
+                $lastId = $conn->lastInsertId();
+
+                $CategoriaCurso = CategoriasCursos::readOne($lastId);
+                ApiResponse::sendSuccess('Tipo de curso criado com sucesso', $CategoriaCurso, 200);
             }
         } catch (PDOException $e) {
             ApiResponse::sendError('Erro ao criar tipo de curso', $e->getMessage(), 500);
@@ -37,7 +42,7 @@ class categoriasCursosController
     public function getAllTiposCursos()
     {
         try {
-            $TiposCursos = CategoriasCursos::ReadAllTiposCursos();
+            $TiposCursos = CategoriasCursos::ReadAll();
             ApiResponse::sendSuccess('Lista retornadada com sucesso', $TiposCursos, 200);
         } catch (PDOException $e) {
             ApiResponse::sendError('Erro ao retornar lista', $e->getMessage(), 500);
@@ -47,7 +52,7 @@ class categoriasCursosController
     public function getTipoCursoById($id_categoria_curso)
     {
         try {
-            $CategoriaCurso = CategoriasCursos::ReadOneTipoCurso($id_categoria_curso);
+            $CategoriaCurso = CategoriasCursos::readOne($id_categoria_curso);
 
             if ($CategoriaCurso) {
                 ApiResponse::sendSuccess('Categoria de curso encontrada com sucesso', $CategoriaCurso, 200);
@@ -80,7 +85,7 @@ class categoriasCursosController
         FormValidator::FormValidator($dados, $requiredFields);
 
         try {
-            $CategoriaCurso = CategoriasCursos::ReadOneTipoCurso($id_categoria_curso);
+            $CategoriaCurso = CategoriasCursos::readOne($id_categoria_curso);
 
             if (!$CategoriaCurso) {
                 ApiResponse::sendResponse([
@@ -89,10 +94,10 @@ class categoriasCursosController
                 ], 404);
             }
 
-            $updateSuccess = CategoriasCursos::UpdateTipoCurso($id_categoria_curso, $dados);
+            $updateSuccess = CategoriasCursos::update($id_categoria_curso, $dados);
 
             if ($updateSuccess > 0) {
-                $CategoriaCursoAtualizada = CategoriasCursos::ReadOneTipoCurso($id_categoria_curso);
+                $CategoriaCursoAtualizada = CategoriasCursos::ReadOne($id_categoria_curso);
                 ApiResponse::sendSuccess('Categoria turma alterada com sucesso', $CategoriaCursoAtualizada);
             } else {
                 ApiResponse::sendResponse([
@@ -108,7 +113,7 @@ class categoriasCursosController
     public function delCategoriaCurso($id_categoria_curso)
     {
         try {
-            $CategoriaCurso = CategoriasCursos::ReadOneTipoCurso($id_categoria_curso);
+            $CategoriaCurso = CategoriasCursos::ReadOne($id_categoria_curso);
 
             if (!$CategoriaCurso) {
                 ApiResponse::sendResponse([
@@ -117,7 +122,7 @@ class categoriasCursosController
                 ], 404);
             }
 
-            $deleteSuccess = CategoriasCursos::DeleteAmbiente($id_categoria_curso);
+            $deleteSuccess = CategoriasCursos::delete($id_categoria_curso);
 
             if ($deleteSuccess) {
                 ApiResponse::sendSuccess('Categoria curso deletada com sucesso', null, 200);
