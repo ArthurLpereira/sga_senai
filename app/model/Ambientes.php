@@ -1,9 +1,14 @@
 <?php
 
-include_once "./app/config/database.php";
+include_once "./app/model/BaseModel.php";
 
-class Ambientes
+class Ambientes extends BaseModel
 {
+    // 1. Definir o nome da tabela e da chave primária
+    protected static $tableName = 'ambientes';
+    protected static $primaryKey = 'id_ambiente';
+
+    // 2. Manter as propriedades e o construtor (se necessário)
     public $id_ambiente;
     public $nome_ambiente;
     public $num_ambiente;
@@ -17,73 +22,5 @@ class Ambientes
         $this->num_ambiente = $num_ambiente;
         $this->capacidade_ambiente = $capacidade_ambiente;
         $this->status_ambiente = $status_ambiente;
-    }
-
-    public static function CreateAmbiente($dados)
-    {
-        $conn = Database::connection();
-        $sql = "INSERT INTO `ambientes` (`nome_ambiente`, `num_ambiente`, `capacidade_ambiente`, `status_ambiente`) VALUES (:nome_ambiente, :num_ambiente, :capacidade_ambiente, :status_ambiente)";
-        $stmt = $conn->prepare($sql);
-
-        $stmt->bindParam(':nome_ambiente', $dados['nome_ambiente']);
-        $stmt->bindParam(':num_ambiente', $dados['num_ambiente']);
-        $stmt->bindParam(':capacidade_ambiente', $dados['capacidade_ambiente']);
-        $stmt->bindParam(':status_ambiente', $dados['status_ambiente']);
-
-        $stmt->execute();
-
-        $novoId = $conn->lastInsertId();
-        return new self($novoId, $dados['nome_ambiente'], $dados['num_ambiente'], $dados['capacidade_ambiente'], $dados['status_ambiente']);
-    }
-
-    public static function ReadAllAmbientes()
-    {
-        $conn = Database::connection();
-        $sql = "SELECT * FROM `ambientes`";
-        $stmt = $conn->prepare($sql);
-
-        $stmt->execute();
-
-        $ambientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $ambientes;
-    }
-
-    public static function ReadOneAmbiente($id_ambiente)
-    {
-        $conn = Database::connection();
-        $sql = "SELECT * FROM `ambientes` WHERE `id_ambiente` = :id_ambiente";
-        $stmt = $conn->prepare($sql);
-
-        $stmt->bindParam(':id_ambiente', $id_ambiente, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public static function UpdateAmbiente($id_ambiente, $dados)
-    {
-        $conn = Database::connection();
-        // Adicione aspas simples invertidas (backticks) aos nomes das colunas
-        $sql = "UPDATE ambientes SET `nome_ambiente` = :nome_ambiente, `num_ambiente` = :num_ambiente, `capacidade_ambiente` = :capacidade_ambiente, `status_ambiente` = :status_ambiente WHERE `id_ambiente` = :id_ambiente";
-        $stmt = $conn->prepare($sql);
-
-        $stmt->bindParam(':id_ambiente', $id_ambiente, PDO::PARAM_INT);
-        $stmt->bindParam(':nome_ambiente', $dados['nome_ambiente']);
-        $stmt->bindParam(':num_ambiente', $dados['num_ambiente']);
-        $stmt->bindParam(':capacidade_ambiente', $dados['capacidade_ambiente']);
-        $stmt->bindParam(':status_ambiente', $dados['status_ambiente']);
-
-        return $stmt->execute();
-    }
-
-    public static function DeleteAmbiente($id_ambiente)
-    {
-        $conn = Database::connection();
-        $sql = "DELETE FROM `ambientes` WHERE id_ambiente = :id_ambiente";
-
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':id_ambiente', $id_ambiente, PDO::PARAM_INT);
-
-        return $stmt->execute();
     }
 }
